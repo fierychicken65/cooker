@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "601513932979",
+    "project_id": "cooker-bas",
+    "storage_bucket": "cooker-bas.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:601513932979:android:6870e29ebfd4ee2f9c18c6",
+        "android_client_info": {
+          "package_name": "com.example.cooker"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDyfcCLKbNMnGBwYipZMznjWogPx4c0Mo0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
