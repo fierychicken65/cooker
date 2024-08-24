@@ -1,5 +1,5 @@
-import 'package:cooker/pages/registration.dart';
 import 'package:cooker/pages/login_confirm.dart';
+import 'package:cooker/pages/root_dir_page.dart';
 import 'package:flutter/material.dart';
 import 'package:cooker/pages/welcome.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -24,6 +24,7 @@ class MyApp extends StatelessWidget {
       routes: {
         WelcomePage.id : (context) => const WelcomePage(),
         ScreenPage.id : (context) => const ScreenPage(),
+        RootDirPage.id: (context) => const RootDirPage(),
       },
     );
   }

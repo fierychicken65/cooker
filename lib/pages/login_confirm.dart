@@ -1,3 +1,4 @@
+import 'package:cooker/pages/root_dir_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -26,14 +27,17 @@ class _ScreenPageState extends State<ScreenPage> {
             (image != null)
                 ? Column(
                     children: [
-                      ClipRRect(
-                        borderRadius:
-                            BorderRadius.circular(60), // Set the desired border radius here
-                        child: Image.network(
-                          image!,
-                          height: 100,
-                          width: 100,
-                          fit: BoxFit.cover,
+                      Hero(
+                        tag: 'profile',
+                        child: ClipRRect(
+                          borderRadius:
+                              BorderRadius.circular(60), // Set the desired border radius here
+                          child: Image.network(
+                            image!,
+                            height: 100,
+                            width: 100,
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ),
                       Padding(
@@ -68,7 +72,7 @@ class _ScreenPageState extends State<ScreenPage> {
                 height: 50,
                 padding: EdgeInsets.symmetric(horizontal: 40),
                 onPressed: () {
-                  print(_auth.currentUser?.photoURL);
+                  Navigator.pushNamed(context, RootDirPage.id);
                 },
               ),
             ),
