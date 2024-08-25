@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:file_picker/file_picker.dart';
+import 'dart:io';
+
 
 class RootDirPage extends StatefulWidget {
   const RootDirPage({super.key});
@@ -23,6 +26,31 @@ class _RootDirPageState extends State<RootDirPage> {
         await Future.delayed(Duration(seconds: 10)); // Poll every 10 seconds
       }
     }
+
+    Future<void> _pickAndUploadFile() async {
+      // Pick a file
+      FilePickerResult? result = await FilePicker.platform.pickFiles();
+
+      if (result != null) {
+        File file = File(result.files.single.path!);
+
+        // Create a reference to the location you want to upload to in Firebase Storage
+        final storageRef = FirebaseStorage.instance.ref().child('uploads/${file.toString()}');
+
+        // Upload the file
+        try {
+          await storageRef.putFile(file);
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('File uploaded successfully')));
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to upload file: $e')));
+        }
+      } else {
+        // User canceled the picker
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('No file selected')));
+      }
+    }
+
+
 
 
 
@@ -58,7 +86,7 @@ class _RootDirPageState extends State<RootDirPage> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Padding(
+          const Padding(
             padding: EdgeInsets.symmetric(vertical: 13, horizontal: 10),
             child: Align(
               alignment: Alignment.centerLeft,
@@ -113,7 +141,7 @@ class _RootDirPageState extends State<RootDirPage> {
             child: Padding(
               padding: EdgeInsets.symmetric(vertical: 30),
               child: MaterialButton(
-                onPressed: () {},
+                onPressed:  _pickAndUploadFile,
                 color: Colors.deepPurple,
                 elevation: 30,
                 splashColor: Colors.red,
