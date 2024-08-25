@@ -33,9 +33,10 @@ class _RootDirPageState extends State<RootDirPage> {
 
       if (result != null) {
         File file = File(result.files.single.path!);
+        String fileName = file.path.split('/').last;
 
         // Create a reference to the location you want to upload to in Firebase Storage
-        final storageRef = FirebaseStorage.instance.ref().child('uploads/${file.toString()}');
+        final storageRef = FirebaseStorage.instance.ref().child(fileName);
 
         // Upload the file
         try {
