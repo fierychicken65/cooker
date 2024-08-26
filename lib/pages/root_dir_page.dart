@@ -18,9 +18,16 @@ class _RootDirPageState extends State<RootDirPage> {
     final FirebaseAuth _auth = FirebaseAuth.instance;
     late String? image = _auth.currentUser?.photoURL;
     final storage = FirebaseStorage.instance;
+    final User? user = _auth.currentUser;
+
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('User not signed in')));
+    }
+    final String uid = user!.uid;
+
 
     Stream<ListResult> listFilesStream() async* {
-      final storageRef = storage.ref();
+      final storageRef = storage.ref().child('$uid/');
       while (true) {
         yield await storageRef.listAll();
         await Future.delayed(Duration(seconds: 10)); // Poll every 10 seconds
@@ -36,7 +43,7 @@ class _RootDirPageState extends State<RootDirPage> {
         String fileName = file.path.split('/').last;
 
         // Create a reference to the location you want to upload to in Firebase Storage
-        final storageRef = FirebaseStorage.instance.ref().child(fileName);
+        final storageRef = FirebaseStorage.instance.ref().child('$uid/$fileName');
 
         // Upload the file
         try {
@@ -121,15 +128,22 @@ class _RootDirPageState extends State<RootDirPage> {
                           border: Border.all(color: Colors.white10),
                           borderRadius: BorderRadius.circular(8.0),
                         ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.asset('images/folder.png', height: 50),
-                            Text(
-                              snapshot.data!.items[index].name,
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ],
+                        child: MaterialButton(
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          splashColor: Colors.blueGrey,
+                          onPressed: (){
+
+                          },
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Image.asset('images/folder.png', height: 50),
+                              Text(
+                                snapshot.data!.items[index].name,
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ],
+                          ),
                         ),
                       );
                     },
