@@ -1,3 +1,4 @@
+import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -25,29 +26,25 @@ class _RootDirPageState extends State<RootDirPage> {
       setState(() {
         _selectedIndex = index;
 
-        if(_selectedIndex == 1){
+        if (_selectedIndex == 1) {
           current_path = '';
-        }else if(_selectedIndex == 0){
+        } else if (_selectedIndex == 0) {
           if (current_path.isNotEmpty) {
             List<String> pathSegments = current_path.split('/');
             print(pathSegments);
             if (pathSegments.isNotEmpty) {
-              if(pathSegments.last.isEmpty){
+              if (pathSegments.last.isEmpty) {
                 pathSegments.removeLast();
               }
               pathSegments.removeLast();
               current_path = pathSegments.join('/');
             }
           }
-
         }
       });
     }
 
-    if (user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('User not signed in')));
-    }
-    final String uid = user!.uid;
+    final String uid = user.uid;
 
     Stream<ListResult> listFilesStream(String path) async* {
       final storageRef = storage.ref().child(path);
@@ -83,181 +80,178 @@ class _RootDirPageState extends State<RootDirPage> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-          automaticallyImplyLeading: false,
-          elevation: 10,
-          backgroundColor: Colors.deepPurpleAccent,
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Center(
-                child: Text(
-                  '$username',
-                  style: TextStyle(fontWeight: FontWeight.w800),
-                ),
-              ),
-              Hero(
-                tag: 'profile',
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(60),
-                  child: Image.network(
-                    image!,
-                    height: 50,
-                    width: 50,
-                    fit: BoxFit.cover,
+        appBar: AppBar(
+            automaticallyImplyLeading: false,
+            elevation: 10,
+            backgroundColor: Colors.deepPurpleAccent,
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Center(
+                  child: Text(
+                    '$username',
+                    style: TextStyle(fontWeight: FontWeight.w800),
                   ),
                 ),
-              )
-            ],
-          )),
-      backgroundColor: Colors.black,
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 13, horizontal: 10),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Storage($username/$current_path)',
-                style: TextStyle(color: Colors.grey, fontSize: 18),
-              ),
-            ),
-          ),
-          StreamBuilder<ListResult>(
-            stream: listFilesStream('$uid/$current_path'),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
-              } else if (!snapshot.hasData || snapshot.data!.items.isEmpty) {
-                return Center(
-                    child: Text(
-                  'No files found',
-                  style: TextStyle(color: Colors.white),
-                ));
-              } else {
-                return Expanded(
-                  child: GridView.builder(
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3, // Number of columns
-                      crossAxisSpacing: 5.0,
-                      mainAxisSpacing: 10.0,
+                Hero(
+                  tag: 'profile',
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(60),
+                    child: Image.network(
+                      image!,
+                      height: 50,
+                      width: 50,
+                      fit: BoxFit.cover,
                     ),
-                    itemCount: snapshot.data!.items.length + snapshot.data!.prefixes.length,
-                    itemBuilder: (context, index) {
-                      if (index < snapshot.data!.prefixes.length) {
-                        // Display folder
-                        final folder = snapshot.data!.prefixes[index];
-                        return Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.white10),
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                          child: MaterialButton(
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                            splashColor: Colors.blueGrey,
-                            onPressed: () {
-                              setState(() {
-                                current_path = '${current_path}${folder.name}/';
-                              });
-                            },
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Image.asset('images/folder.png', height: 50),
-                                Text(
-                                  folder.name,
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      } else {
-                        // Display file
-                        final file = snapshot.data!.items[index - snapshot.data!.prefixes.length];
-                        return Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.white10),
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                          child: MaterialButton(
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                            splashColor: Colors.blueGrey,
-                            onPressed: () {
-                              // Handle file click
-                            },
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Image.asset('images/cook1.png', height: 50),
-                                Text(
-                                  file.name,
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      }
-                    },
                   ),
-                );
-              }
-            },
-          ),
-          Center(
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 30),
-              child: MaterialButton(
-                onPressed: _pickAndUploadFile,
-                color: Colors.deepPurple,
-                elevation: 30,
-                splashColor: Colors.red,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(70),
-                ),
-                height: 70,
-                minWidth: 90,
-                child: Image.asset(
-                  'images/upload.png',
-                  height: 50,
+                )
+              ],
+            )),
+        backgroundColor: Colors.black,
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 13, horizontal: 10),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Storage($username/$current_path)',
+                  style: TextStyle(color: Colors.grey, fontSize: 18),
                 ),
               ),
             ),
-          ),
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(items:  const[
-        BottomNavigationBarItem(
-          icon: Icon(Icons.arrow_back),
-          label: 'back',
+            StreamBuilder<ListResult>(
+              stream: listFilesStream('$uid/$current_path'),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.items.isEmpty) {
+                  return Center(
+                      child: Text(
+                    'No files found',
+                    style: TextStyle(color: Colors.white),
+                  ));
+                } else {
+                  return Expanded(
+                    child: GridView.builder(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3, // Number of columns
+                        crossAxisSpacing: 5.0,
+                        mainAxisSpacing: 10.0,
+                      ),
+                      itemCount: snapshot.data!.items.length + snapshot.data!.prefixes.length,
+                      itemBuilder: (context, index) {
+                        if (index < snapshot.data!.prefixes.length) {
+                          // Display folder
+                          final folder = snapshot.data!.prefixes[index];
+                          return Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.white10),
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            child: MaterialButton(
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                              splashColor: Colors.blueGrey,
+                              onPressed: () {
+                                setState(() {
+                                  current_path = '${current_path}${folder.name}/';
+                                });
+                              },
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Image.asset('images/folder.png', height: 50),
+                                  Text(
+                                    folder.name,
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        } else {
+                          // Display file
+                          final file = snapshot.data!.items[index - snapshot.data!.prefixes.length];
+                          return Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.white10),
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            child: MaterialButton(
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                              splashColor: Colors.blueGrey,
+                              onPressed: () {
+                                // Handle file click
+                              },
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Image.asset('images/cook1.png', height: 50),
+                                  Text(
+                                    file.name,
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                  );
+                }
+              },
+            ),
+            Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 30),
+                child: MaterialButton(
+                  onPressed: _pickAndUploadFile,
+                  color: Colors.deepPurple,
+                  elevation: 30,
+                  splashColor: Colors.red,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(70),
+                  ),
+                  height: 70,
+                  minWidth: 90,
+                  child: Image.asset(
+                    'images/upload.png',
+                    height: 50,
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home),
-          label: 'Home',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.create_new_folder),
-          label: 'New Folder',
+        bottomNavigationBar: AnimatedBottomNavigationBar(
+          icons: [
+            Icons.arrow_back,
+            Icons.home,
+            Icons.create_new_folder,
+          ],
+          activeIndex: _selectedIndex,
+          onTap: _onItemTapped,
+          gapLocation: GapLocation.none,
+          leftCornerRadius: 30,
+          rightCornerRadius: 30,
+          elevation: 10,
+          activeColor: Colors.black,
+          inactiveColor: Colors.black,
+          backgroundColor: Colors.deepPurple,
+          splashColor: Colors.blue,
+          splashRadius: 100,
+          borderWidth: 7,
+          borderColor: Colors.red,
         ),
 
-      ],
-        currentIndex: _selectedIndex,
-        backgroundColor: Colors.deepPurple,
-        unselectedItemColor: Colors.black,
-        selectedItemColor: Colors.black,
-        enableFeedback: true,
-        showUnselectedLabels: false,
-        showSelectedLabels: false,
-        onTap: _onItemTapped,
-
-      ),
     );
   }
 }
 
 int _selectedIndex = 0;
+
 
