@@ -1,6 +1,7 @@
 import 'package:cooker/pages/login_confirm.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
@@ -48,14 +49,14 @@ class _WelcomePageState extends State<WelcomePage> {
                     ),
                   ),
                 ),
-                const Text(
+                Text(
                   'COOKER',
                   style: TextStyle(
                     fontSize: 40,
                     fontWeight: FontWeight.bold,
                     color: Colors.red,
                   ),
-                ),
+                ).animate().fadeIn(duration: 600.ms).then(delay: 200.ms), // baseline=800ms.slide(),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 40,vertical: 30),
                   child: MaterialButton(
