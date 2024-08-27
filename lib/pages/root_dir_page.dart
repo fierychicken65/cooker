@@ -103,16 +103,11 @@ class _RootDirPageState extends State<RootDirPage> {
         appBar: AppBar(
             automaticallyImplyLeading: false,
             elevation: 10,
+            toolbarHeight: 70,
             backgroundColor: Colors.black54,
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Center(
-                  child: Text(
-                    '$username',
-                    style: TextStyle(fontWeight: FontWeight.w800,color: Colors.white),
-                  ),
-                ),
                 Hero(
                   tag: 'profile',
                   child: ClipRRect(
@@ -124,7 +119,13 @@ class _RootDirPageState extends State<RootDirPage> {
                       fit: BoxFit.cover,
                     ),
                   ),
-                )
+                ),
+                Center(
+                  child: Text(
+                    '$username',
+                    style: TextStyle(fontWeight: FontWeight.w800,color: Colors.white),
+                  ),
+                ),
               ],
             )),
         backgroundColor: Colors.cyan,
