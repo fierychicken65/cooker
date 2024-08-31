@@ -56,9 +56,12 @@ class _WelcomePageState extends State<WelcomePage> {
                     fontWeight: FontWeight.bold,
                     color: Colors.red,
                   ),
-                ).animate().fadeIn(duration: 600.ms).then(delay: 200.ms), // baseline=800ms.slide(),
+                )
+                    .animate()
+                    .fadeIn(duration: 600.ms)
+                    .then(delay: 200.ms), // baseline=800ms.slide(),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 40,vertical: 30),
+                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 30),
                   child: MaterialButton(
                     onPressed: () async {
                       try {
@@ -66,7 +69,8 @@ class _WelcomePageState extends State<WelcomePage> {
                           showLoading = true;
                         });
 
-                        final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+                        final GoogleSignInAccount? googleUser =
+                            await GoogleSignIn().signIn();
 
                         final GoogleSignInAuthentication? googleAuth =
                             await googleUser?.authentication;
@@ -75,7 +79,8 @@ class _WelcomePageState extends State<WelcomePage> {
                           accessToken: googleAuth?.accessToken,
                           idToken: googleAuth?.idToken,
                         );
-                        await FirebaseAuth.instance.signInWithCredential(credential);
+                        await FirebaseAuth.instance
+                            .signInWithCredential(credential);
                         Navigator.pushNamed(context, ScreenPage.id);
                         setState(() {
                           showLoading = false;
@@ -95,6 +100,7 @@ class _WelcomePageState extends State<WelcomePage> {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('Exception: $e')),
                         );
+                        print(e);
                       }
                     },
                     height: 50,
