@@ -55,6 +55,7 @@ class _RootDirPageState extends State<RootDirPage> {
               }
               pathSegments.removeLast();
               current_path = pathSegments.join('/');
+              current_path += '/';
             }
           } else if (_selectedIndex == 2) {
             () => showDialog<String>(
