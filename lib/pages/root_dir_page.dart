@@ -1,12 +1,16 @@
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cooker/other_stuff/firebase_login.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
+
+
+int _selectedIndex = 0;
+
 
 class RootDirPage extends StatefulWidget {
   const RootDirPage({super.key});
@@ -31,13 +35,7 @@ class _RootDirPageState extends State<RootDirPage> {
 
   @override
   Widget build(BuildContext context) {
-    final FirebaseAuth _auth = FirebaseAuth.instance;
-    late String? image = _auth.currentUser?.photoURL;
-    final storage = FirebaseStorage.instance;
-    final User? user = _auth.currentUser;
-    final String? username = user!.displayName;
-    int _selectedIndex = 0;
-    final String uid = user.uid;
+
 
     void _onItemTapped(int index) {
       setState(() {
@@ -55,6 +53,7 @@ class _RootDirPageState extends State<RootDirPage> {
               }
               pathSegments.removeLast();
               current_path = pathSegments.join('/');
+              current_path += '/';
             }
           } else if (_selectedIndex == 2) {
             () => showDialog<String>(
