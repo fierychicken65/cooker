@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cooker/network/firebase_login.dart';
 import 'dart:io';
+import 'dart:typed_data';
 
 int _selectedIndex = 0;
 
@@ -18,16 +19,18 @@ class RootDirPage extends StatefulWidget {
 class _RootDirPageState extends State<RootDirPage> {
   String currentPath = '';
   late String uid;
-
+  late TextEditingController _folderNameController;
   @override
   void initState() {
     super.initState();
     final User? user = auth.currentUser;
     uid = user!.uid;
+    _folderNameController = TextEditingController();
   }
 
   @override
   void dispose() {
+    _folderNameController = TextEditingController();
     super.dispose();
   }
 
@@ -39,22 +42,21 @@ class _RootDirPageState extends State<RootDirPage> {
       File file = File(result.files.single.path!);
       String fileName = file.path.split('/').last;
       // Create a reference to the location you want to upload to in Firebase Storage
-      final storageRef =
-          FirebaseStorage.instance.ref().child('$uid/$currentPath/$fileName');
+      final storageRef = storage.ref().child('$uid/$currentPath/$fileName');
 
       // Upload the file
       try {
         await storageRef.putFile(file);
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('File uploaded successfully')));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Center(child: Text('File uploaded successfully'))));
       } catch (e) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Failed to upload file: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Center(child: Text('Failed to upload file: $e'))));
       }
     } else {
       // User canceled the picker
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('No file selected')));
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Center(child: Text('No file selected'))));
     }
   }
 
@@ -88,16 +90,65 @@ class _RootDirPageState extends State<RootDirPage> {
         showDialog<String>(
           context: context,
           builder: (BuildContext context) => AlertDialog(
-            title: const Text('AlertDialog Title'),
-            content: const Text('AlertDialog description'),
+            title: const Center(child: Text('Create Folder')),
+            content: TextField(
+              controller: _folderNameController,
+              keyboardType: TextInputType.text,
+            ),
             actions: <Widget>[
-              TextButton(
-                onPressed: () => Navigator.pop(context, 'Cancel'),
-                child: const Text('Cancel'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(context, 'OK'),
-                child: const Text('OK'),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      _folderNameController.clear();
+                      Navigator.pop(context, 'Cancel');
+                    },
+                    child: const Text('Cancel'),
+                  ),
+                  TextButton(
+                    onPressed: () async {
+                      String folderName = _folderNameController.text;
+                      if (folderName.isNotEmpty) {
+                        try {
+                          // Create a reference to the new folder in Firebase Storage
+                          final folderRef = storage
+                              .ref()
+                              .child('$uid/$currentPath/$folderName/');
+
+                          // Create the folder by uploading an empty file
+                          await folderRef
+                              .child('delete this')
+                              .putData(Uint8List(0));
+                          // Notify the user about the successful folder creation
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Center(
+                                  child: Text('Folder created successfully')),
+                            ),
+                          );
+
+                          // Clear the text field
+                          _folderNameController.clear();
+                        } catch (e) {
+                          // Notify the user about the failure
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content: Text('Failed to create folder: $e')),
+                          );
+                        }
+                      } else {
+                        // Notify the user to enter a folder name
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text('Please enter a folder name')),
+                        );
+                      }
+                      Navigator.pop(context, 'OK');
+                    },
+                    child: const Text('OK'),
+                  ),
+                ],
               ),
             ],
           ),
