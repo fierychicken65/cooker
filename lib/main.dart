@@ -1,12 +1,12 @@
 import 'package:cooker/pages/login_confirm.dart';
 import 'package:cooker/pages/root_dir_page.dart';
-import 'package:flutter/material.dart';
 import 'package:cooker/pages/welcome.dart';
+import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cooker/firebase_options.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -26,11 +26,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       initialRoute: WelcomePage.id,
       routes: {
-        WelcomePage.id : (context) => const WelcomePage(),
-        ScreenPage.id : (context) => const ScreenPage(),
+        WelcomePage.id: (context) => const WelcomePage(),
+        ScreenPage.id: (context) => const ScreenPage(),
         RootDirPage.id: (context) => const RootDirPage(),
       },
     );
   }
 }
-
