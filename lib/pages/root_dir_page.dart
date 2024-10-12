@@ -55,6 +55,7 @@ class _RootDirPageState extends State<RootDirPage> {
         await storageRef.putFile(file);
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Center(child: Text('File uploaded successfully'))));
+        setState(() {});
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Center(child: Text('Failed to upload file: $e'))));
@@ -321,46 +322,47 @@ class _RootDirPageState extends State<RootDirPage> {
         ),
       ),
       backgroundColor: Colors.black,
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 13, horizontal: 10),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Storage\n$username/$currentPath',
-                style: TextStyle(color: Colors.white, fontSize: 18),
-              ),
-            ),
-          ),
-          Gridview(
-            path: currentPath,
-            onPathChanged: _onPathChanged,
-          ),
-          Center(
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 30),
-              child: MaterialButton(
-                onPressed: _pickAndUploadFile,
-                onLongPress: () {},
-                color: Colors.green,
-                elevation: 20,
-                splashColor: Colors.red,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(70),
-                ),
-                height: 70,
-                minWidth: 90,
-                child: Image.asset(
-                  'images/upload.png',
-                  height: 50,
+      body: Stack(children: [
+        Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 13, horizontal: 10),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Storage\n$username/$currentPath',
+                  style: TextStyle(color: Colors.white, fontSize: 18),
                 ),
               ),
             ),
+            Gridview(
+              path: currentPath,
+              onPathChanged: _onPathChanged,
+            ),
+          ],
+        ),
+        Positioned(
+          bottom: 40,
+          right: 30,
+          child: MaterialButton(
+            onPressed: _pickAndUploadFile,
+            onLongPress: () {},
+            color: Colors.redAccent,
+            elevation: 20,
+            splashColor: Colors.red,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(70),
+            ),
+            height: 50,
+            minWidth: 50,
+            child: Image.asset(
+              'images/upload.png',
+              height: 40,
+            ),
           ),
-        ],
-      ),
+        ),
+      ]),
       bottomNavigationBar: BottomNavigationBar(
         items: const [
           BottomNavigationBarItem(

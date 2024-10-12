@@ -142,9 +142,26 @@ class _GridviewState extends State<Gridview> {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8)),
                       splashColor: Colors.blueGrey,
+                      color: bgFolderColor(file.fullPath),
                       onPressed: () {
                         print(currentPath);
-                        // Handle file click
+                        String filepath = file.fullPath;
+                        if (!appBarNotify.value) {
+                          setState(() {
+                            _updateDeleteList(filepath);
+                          });
+                          print(deleteList);
+                        }
+                      },
+                      onLongPress: () {
+                        String filepath = file.fullPath;
+                        if (appBarNotify.value) {
+                          setState(() {
+                            _updateDeleteList(filepath);
+                            appBarNotify.value = !appBarNotify.value;
+                          });
+                        }
+                        print(deleteList);
                       },
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
