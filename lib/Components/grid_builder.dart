@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:cooker/pages/root_dir_page.dart';
 import 'package:flutter/material.dart';
 import 'package:cooker/network/firebase_login.dart';

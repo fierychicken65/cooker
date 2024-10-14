@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:cooker/Components/grid_builder.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cooker/network/firebase_login.dart';
@@ -221,10 +220,8 @@ class _RootDirPageState extends State<RootDirPage> {
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             onSelected: (int result) {
               if (result == 0) {
-                // Action for first menu item
-              } else if (result == 1) {
-                // Action for second menu item
-              }
+                Navigator.pushNamed(context, 'profile_page');
+              } else if (result == 1) {}
             },
             itemBuilder: (BuildContext context) => <PopupMenuEntry<int>>[
               const PopupMenuItem<int>(
@@ -249,11 +246,14 @@ class _RootDirPageState extends State<RootDirPage> {
               ),
             ),
           ),
-          Center(
+          Padding(
+            padding: EdgeInsets.all(10),
             child: Text(
               '$username',
-              style:
-                  TextStyle(fontWeight: FontWeight.w800, color: Colors.white),
+              style: const TextStyle(
+                  fontSize: 20,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w800),
             ),
           ),
         ],
