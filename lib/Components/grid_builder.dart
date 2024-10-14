@@ -4,6 +4,7 @@ import 'package:cooker/network/firebase_login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cooker/Components/folderItem.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:file_icon/file_icon.dart';
 
 Stream<ListResult> listFilesStream(String path) async* {
   final storageRef = storage.ref().child(path);
@@ -131,49 +132,55 @@ class _GridviewState extends State<Gridview> {
                   // Display file
                   final file = snapshot
                       .data!.items[index - snapshot.data!.prefixes.length];
-                  return Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.white10),
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    child: MaterialButton(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8)),
-                      splashColor: Colors.blueGrey,
-                      color: bgFolderColor(file.fullPath),
-                      onPressed: () {
-                        print(currentPath);
-                        String filepath = file.fullPath;
-                        if (!appBarNotify.value) {
-                          setState(() {
-                            _updateDeleteList(filepath);
-                          });
-                          print(deleteList);
-                        }
-                      },
-                      onLongPress: () {
-                        String filepath = file.fullPath;
-                        if (appBarNotify.value) {
-                          setState(() {
-                            _updateDeleteList(filepath);
-                            appBarNotify.value = !appBarNotify.value;
-                          });
-                        }
-                        print(deleteList);
-                      },
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.asset('images/cook1.png', height: 50),
-                          Text(
-                            file.name,
-                            style: TextStyle(color: Colors.white),
-                            overflow: TextOverflow.ellipsis,
+                  return (file.name != 'delete this')
+                      ? Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.white10),
+                            borderRadius: BorderRadius.circular(8.0),
                           ),
-                        ],
-                      ),
-                    ),
-                  );
+                          child: MaterialButton(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8)),
+                            splashColor: Colors.blueGrey,
+                            color: bgFolderColor(file.fullPath),
+                            onPressed: () {
+                              print(currentPath);
+                              String filepath = file.fullPath;
+                              if (!appBarNotify.value) {
+                                setState(() {
+                                  _updateDeleteList(filepath);
+                                });
+                                print(deleteList);
+                              }
+                              print(file.name.split('.').last);
+                            },
+                            onLongPress: () {
+                              String filepath = file.fullPath;
+                              if (appBarNotify.value) {
+                                setState(() {
+                                  _updateDeleteList(filepath);
+                                  appBarNotify.value = !appBarNotify.value;
+                                });
+                              }
+                              print(deleteList);
+                            },
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                FileIcon(
+                                  '.${file.name.split('.').last}',
+                                  size: 50,
+                                ),
+                                Text(
+                                  file.name,
+                                  style: TextStyle(color: Colors.white),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                      : null;
                 }
               },
             ),

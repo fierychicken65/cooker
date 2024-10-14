@@ -113,6 +113,7 @@ class _RootDirPageState extends State<RootDirPage> {
                     child: const Text('Cancel'),
                   ),
                   TextButton(
+                    autofocus: true,
                     onPressed: () async {
                       String folderName = _folderNameController.text;
                       if (folderName.isNotEmpty) {
