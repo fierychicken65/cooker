@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:cooker/Components/grid_builder.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cooker/network/firebase_login.dart';
@@ -8,6 +7,9 @@ import 'dart:io';
 import 'dart:typed_data';
 
 int _selectedIndex = 0;
+ValueNotifier<bool> appBarNotify = ValueNotifier<bool>(true);
+List<String> deleteList = [];
+ValueNotifier<int> deleteCountNotifier = ValueNotifier<int>(0);
 
 class RootDirPage extends StatefulWidget {
   const RootDirPage({super.key});
@@ -31,6 +33,9 @@ class _RootDirPageState extends State<RootDirPage> {
   @override
   void dispose() {
     _folderNameController = TextEditingController();
+    deleteList.clear();
+    deleteCountNotifier.value = deleteList.length;
+    appBarNotify.value = true;
     super.dispose();
   }
 
@@ -49,6 +54,7 @@ class _RootDirPageState extends State<RootDirPage> {
         await storageRef.putFile(file);
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Center(child: Text('File uploaded successfully'))));
+        setState(() {});
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Center(child: Text('Failed to upload file: $e'))));
@@ -120,6 +126,9 @@ class _RootDirPageState extends State<RootDirPage> {
                           await folderRef
                               .child('delete this')
                               .putData(Uint8List(0));
+                          setState(() {
+                            currentPath = currentPath;
+                          });
                           // Notify the user about the successful folder creation
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
@@ -157,106 +166,203 @@ class _RootDirPageState extends State<RootDirPage> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Future<void> _deleteItems(List<String> deleteList) async {
+    for (String item in deleteList) {
+      try {
+        final ref = storage.ref().child(item);
+        final listResult = await ref.listAll();
+        final emptyCheck = await ref.listAll();
+        if (emptyCheck.items.isEmpty && emptyCheck.prefixes.isEmpty) {
+          await ref.delete();
+        }
+        // Delete all files in the folder
+        for (var fileRef in listResult.items) {
+          await fileRef.delete();
+        }
+
+        // Recursively delete all subfolders
+        for (var folderRef in listResult.prefixes) {
+          await _deleteItems([folderRef.fullPath]);
+        }
+
+        // Finally, delete the folder itself if it is empty
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Center(child: Text('Failed to delete: $e'))),
+        );
+      }
+    }
+    setState(() {
+      deleteList.clear();
+      deleteCountNotifier.value = deleteList.length;
+      appBarNotify.value = true;
+    });
+  }
+
+  AppBar buildAppBar() {
     late String? image = auth.currentUser?.photoURL;
     final User? user = auth.currentUser;
     final String? username = user!.displayName;
 
-    return Scaffold(
-      appBar: AppBar(
-          automaticallyImplyLeading: false,
-          elevation: 10,
-          toolbarHeight: 70,
-          backgroundColor: Colors.black54,
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              PopupMenuButton(
-                position: PopupMenuPosition.under,
-                enableFeedback: true,
-                color: Colors.blueGrey,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
-                onSelected: (int result) {
-                  if (result == 0) {
-                    // Action for first menu item
-                  } else if (result == 1) {
-                    // Action for second menu item
-                  }
-                },
-                itemBuilder: (BuildContext context) => <PopupMenuEntry<int>>[
-                  const PopupMenuItem<int>(
-                    value: 0,
-                    child: Text('Profile'),
-                  ),
-                  const PopupMenuItem<int>(
-                    value: 1,
-                    child: Text('Sign Out'),
-                  ),
-                ],
-                child: Hero(
-                  tag: 'profile',
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(60),
-                    child: Image.network(
-                      image!,
-                      height: 50,
-                      width: 50,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-              ),
-              Center(
-                child: Text(
-                  '$username',
-                  style: TextStyle(
-                      fontWeight: FontWeight.w800, color: Colors.white),
-                ),
-              ),
-            ],
-          )),
-      backgroundColor: Colors.black,
-      body: Column(
+    return AppBar(
+      automaticallyImplyLeading: false,
+      elevation: 10,
+      toolbarHeight: 70,
+      backgroundColor: Colors.black54,
+      title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 13, horizontal: 10),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Storage\n$username/$currentPath',
-                style: TextStyle(color: Colors.white, fontSize: 18),
+          PopupMenuButton(
+            position: PopupMenuPosition.under,
+            enableFeedback: true,
+            color: Colors.blueGrey,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            onSelected: (int result) {
+              if (result == 0) {
+                Navigator.pushNamed(context, 'profile_page');
+              } else if (result == 1) {}
+            },
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<int>>[
+              const PopupMenuItem<int>(
+                value: 0,
+                child: Text('Profile'),
+              ),
+              const PopupMenuItem<int>(
+                value: 1,
+                child: Text('Sign Out'),
+              ),
+            ],
+            child: Hero(
+              tag: 'profile',
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(60),
+                child: Image.network(
+                  image!,
+                  height: 50,
+                  width: 50,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
           ),
-          Gridview(
-            path: currentPath,
-            onPathChanged: _onPathChanged,
-          ),
-          Center(
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 30),
-              child: MaterialButton(
-                onPressed: _pickAndUploadFile,
-                color: Colors.green,
-                elevation: 20,
-                splashColor: Colors.red,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(70),
-                ),
-                height: 70,
-                minWidth: 90,
-                child: Image.asset(
-                  'images/upload.png',
-                  height: 50,
-                ),
-              ),
+          Padding(
+            padding: EdgeInsets.all(10),
+            child: Text(
+              '$username',
+              style: const TextStyle(
+                  fontSize: 20,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w800),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  AppBar delAppBar() {
+    late String? image = auth.currentUser?.photoURL;
+    final User? user = auth.currentUser;
+    final String? username = user!.displayName;
+
+    return AppBar(
+      automaticallyImplyLeading: false,
+      elevation: 10,
+      toolbarHeight: 70,
+      backgroundColor: Colors.red,
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          MaterialButton(
+            onPressed: () {
+              setState(() {
+                appBarNotify.value = !appBarNotify.value;
+                deleteList = [];
+                deleteCountNotifier.value = deleteList.length;
+                print(deleteList);
+              });
+            },
+            child: const Icon(Icons.cancel),
+          ),
+          ValueListenableBuilder<int>(
+            valueListenable: deleteCountNotifier,
+            builder: (context, count, child) {
+              return Text('$count Selected');
+            },
+          ),
+          MaterialButton(
+            onPressed: () {
+              _deleteItems(deleteList);
+              appBarNotify.value = !appBarNotify.value;
+              deleteList = [];
+              deleteCountNotifier.value = deleteList.length;
+              print(deleteList);
+            },
+            child: const Icon(Icons.delete),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final User? user = auth.currentUser;
+    final String? username = user!.displayName;
+
+    return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(70.0), // Set the height of the AppBar
+        child: ValueListenableBuilder<bool>(
+          valueListenable: appBarNotify,
+          builder: (context, appBar, child) {
+            return appBar ? buildAppBar() : delAppBar();
+          },
+        ),
+      ),
+      backgroundColor: Colors.black,
+      body: Stack(children: [
+        Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 13, horizontal: 10),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Storage\n$username/$currentPath',
+                  style: TextStyle(color: Colors.white, fontSize: 18),
+                ),
+              ),
+            ),
+            Gridview(
+              path: currentPath,
+              onPathChanged: _onPathChanged,
+            ),
+          ],
+        ),
+        Positioned(
+          bottom: 40,
+          right: 30,
+          child: MaterialButton(
+            onPressed: _pickAndUploadFile,
+            onLongPress: () {},
+            color: Colors.redAccent,
+            elevation: 20,
+            splashColor: Colors.red,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(70),
+            ),
+            height: 50,
+            minWidth: 50,
+            child: Image.asset(
+              'images/upload.png',
+              height: 40,
+            ),
+          ),
+        ),
+      ]),
       bottomNavigationBar: BottomNavigationBar(
         items: const [
           BottomNavigationBarItem(

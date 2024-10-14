@@ -1,6 +1,8 @@
+import 'package:cooker/pages/root_dir_page.dart';
 import 'package:flutter/material.dart';
 import 'package:cooker/network/firebase_login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cooker/Components/folderItem.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 Stream<ListResult> listFilesStream(String path) async* {
@@ -24,6 +26,7 @@ class Gridview extends StatefulWidget {
 class _GridviewState extends State<Gridview> {
   late String currentPath;
   late String uid;
+  late bool initialLoad;
 
   @override
   void initState() {
@@ -31,6 +34,7 @@ class _GridviewState extends State<Gridview> {
     currentPath = widget.path;
     final User? user = auth.currentUser;
     uid = user!.uid;
+    initialLoad = false;
   }
 
   @override
@@ -45,18 +49,37 @@ class _GridviewState extends State<Gridview> {
     }
   }
 
+  void _updateDeleteList(String filepath) {
+    if (deleteList.contains(filepath)) {
+      deleteList.remove(filepath);
+      deleteCountNotifier.value = deleteList.length;
+    } else {
+      deleteList.add(filepath);
+      deleteCountNotifier.value = deleteList.length;
+    }
+    if (deleteCountNotifier.value == 0) {
+      appBarNotify.value = !appBarNotify.value;
+    }
+  }
+
+  Color bgFolderColor(filepath) {
+    return deleteList.contains(filepath) ? Colors.red : Colors.black;
+  }
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<ListResult>(
       stream: listFilesStream('$uid/$currentPath'),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
+        if (snapshot.connectionState == ConnectionState.waiting &&
+            !initialLoad) {
+          initialLoad = true;
           return Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
         } else if (!snapshot.hasData ||
             (snapshot.data!.items.isEmpty && snapshot.data!.prefixes.isEmpty)) {
-          return Center(
+          return const Center(
               child: Text(
             'No files found',
             style: TextStyle(color: Colors.white),
@@ -64,7 +87,7 @@ class _GridviewState extends State<Gridview> {
         } else {
           return Expanded(
             child: GridView.builder(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 3, // Number of columns
                 crossAxisSpacing: 5.0,
                 mainAxisSpacing: 10.0,
@@ -75,33 +98,34 @@ class _GridviewState extends State<Gridview> {
                 if (index < snapshot.data!.prefixes.length) {
                   // Display folder
                   final folder = snapshot.data!.prefixes[index];
-                  return Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.white10),
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    child: MaterialButton(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8)),
-                      splashColor: Colors.blueGrey,
-                      onPressed: () {
+                  return FolderItem(
+                    filepath: folder.fullPath,
+                    name: folder.name,
+                    isSelected: deleteList.contains(folder.fullPath),
+                    onTap: () {
+                      String filepath = folder.fullPath;
+                      if (!appBarNotify.value) {
+                        setState(() {
+                          _updateDeleteList(filepath);
+                        });
+                        print(deleteList);
+                      } else {
                         setState(() {
                           currentPath = '$currentPath${folder.name}/';
                           widget.onPathChanged(currentPath);
                         });
-                        print(currentPath);
-                      },
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.asset('images/folder.png', height: 50),
-                          Text(
-                            folder.name,
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ],
-                      ),
-                    ),
+                      }
+                    },
+                    onLongPress: () {
+                      String filepath = folder.fullPath;
+                      if (appBarNotify.value) {
+                        setState(() {
+                          _updateDeleteList(filepath);
+                          appBarNotify.value = !appBarNotify.value;
+                        });
+                      }
+                      print(deleteList);
+                    },
                   );
                 } else {
                   // Display file
@@ -116,9 +140,26 @@ class _GridviewState extends State<Gridview> {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8)),
                       splashColor: Colors.blueGrey,
+                      color: bgFolderColor(file.fullPath),
                       onPressed: () {
                         print(currentPath);
-                        // Handle file click
+                        String filepath = file.fullPath;
+                        if (!appBarNotify.value) {
+                          setState(() {
+                            _updateDeleteList(filepath);
+                          });
+                          print(deleteList);
+                        }
+                      },
+                      onLongPress: () {
+                        String filepath = file.fullPath;
+                        if (appBarNotify.value) {
+                          setState(() {
+                            _updateDeleteList(filepath);
+                            appBarNotify.value = !appBarNotify.value;
+                          });
+                        }
+                        print(deleteList);
                       },
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
