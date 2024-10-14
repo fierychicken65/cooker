@@ -4,6 +4,7 @@ import 'package:cooker/network/firebase_login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cooker/Components/folderItem.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:file_icon/file_icon.dart';
 
 Stream<ListResult> listFilesStream(String path) async* {
   final storageRef = storage.ref().child(path);
@@ -150,6 +151,7 @@ class _GridviewState extends State<Gridview> {
                           });
                           print(deleteList);
                         }
+                        print(file.name.split('.').last);
                       },
                       onLongPress: () {
                         String filepath = file.fullPath;
@@ -164,7 +166,10 @@ class _GridviewState extends State<Gridview> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Image.asset('images/cook1.png', height: 50),
+                          FileIcon(
+                            '.${file.name.split('.').last}',
+                            size: 50,
+                          ),
                           Text(
                             file.name,
                             style: TextStyle(color: Colors.white),
