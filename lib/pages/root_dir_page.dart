@@ -234,12 +234,19 @@ class _RootDirPageState extends State<RootDirPage> {
             onSelected: (int result) {
               if (result == 0) {
                 Navigator.pushNamed(context, 'profile_page');
-              } else if (result == 1) {}
+              } else if (result == 1) {
+              } else if (result == 2) {
+                Navigator.pushNamed(context, 'search_page');
+              }
             },
             itemBuilder: (BuildContext context) => <PopupMenuEntry<int>>[
               const PopupMenuItem<int>(
                 value: 0,
                 child: Text('Profile'),
+              ),
+              const PopupMenuItem<int>(
+                value: 2,
+                child: Text('Search'),
               ),
               const PopupMenuItem<int>(
                 value: 1,
