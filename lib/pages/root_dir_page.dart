@@ -3,6 +3,7 @@ import 'package:cooker/Components/grid_builder.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cooker/network/firebase_login.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -10,6 +11,7 @@ int _selectedIndex = 0;
 ValueNotifier<bool> appBarNotify = ValueNotifier<bool>(true);
 List<String> deleteList = [];
 ValueNotifier<int> deleteCountNotifier = ValueNotifier<int>(0);
+ValueNotifier<double> uploadProgress = ValueNotifier<double>(0.0);
 
 class RootDirPage extends StatefulWidget {
   const RootDirPage({super.key});
@@ -27,6 +29,7 @@ class _RootDirPageState extends State<RootDirPage> {
     super.initState();
     final User? user = auth.currentUser;
     uid = user!.uid;
+    uploadProgress.value = 1;
     _folderNameController = TextEditingController();
   }
 
@@ -36,6 +39,7 @@ class _RootDirPageState extends State<RootDirPage> {
     deleteList.clear();
     deleteCountNotifier.value = deleteList.length;
     appBarNotify.value = true;
+
     super.dispose();
   }
 
@@ -51,7 +55,15 @@ class _RootDirPageState extends State<RootDirPage> {
 
       // Upload the file
       try {
-        await storageRef.putFile(file);
+        var uploadTask = storageRef.putFile(file);
+        uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
+          uploadProgress.value =
+              snapshot.bytesTransferred / snapshot.totalBytes;
+        });
+        print(uploadProgress.value);
+
+        await uploadTask;
+
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Center(child: Text('File uploaded successfully'))));
         setState(() {});
@@ -323,47 +335,59 @@ class _RootDirPageState extends State<RootDirPage> {
         ),
       ),
       backgroundColor: Colors.black,
-      body: Stack(children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 13, horizontal: 10),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Storage\n$username/$currentPath',
-                  style: TextStyle(color: Colors.white, fontSize: 18),
+      body: Stack(
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 13, horizontal: 10),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Storage\n$username/$currentPath',
+                    style: TextStyle(color: Colors.white, fontSize: 18),
+                  ),
                 ),
               ),
-            ),
-            Gridview(
-              path: currentPath,
-              onPathChanged: _onPathChanged,
-            ),
-          ],
-        ),
-        Positioned(
-          bottom: 40,
-          right: 30,
-          child: MaterialButton(
-            onPressed: _pickAndUploadFile,
-            onLongPress: () {},
-            color: Colors.redAccent,
-            elevation: 20,
-            splashColor: Colors.red,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(70),
-            ),
-            height: 50,
-            minWidth: 50,
-            child: Image.asset(
-              'images/upload.png',
-              height: 40,
+              Gridview(
+                path: currentPath,
+                onPathChanged: _onPathChanged,
+              ),
+              ValueListenableBuilder<double>(
+                valueListenable: uploadProgress,
+                builder: (context, progress, child) {
+                  return LinearProgressIndicator(
+                    value: progress,
+                    backgroundColor: Colors.grey,
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.redAccent),
+                  );
+                },
+              ),
+            ],
+          ),
+          Positioned(
+            bottom: 40,
+            right: 30,
+            child: MaterialButton(
+              onPressed: _pickAndUploadFile,
+              onLongPress: () {},
+              color: Colors.redAccent,
+              elevation: 20,
+              splashColor: Colors.red,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(70),
+              ),
+              height: 50,
+              minWidth: 50,
+              child: Image.asset(
+                'images/upload.png',
+                height: 40,
+              ),
             ),
           ),
-        ),
-      ]),
+        ],
+      ),
       bottomNavigationBar: BottomNavigationBar(
         items: const [
           BottomNavigationBarItem(
