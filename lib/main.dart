@@ -1,11 +1,14 @@
 import 'package:cooker/pages/login_confirm.dart';
 import 'package:cooker/pages/root_dir_page.dart';
+import 'package:cooker/pages/searchResults.dart';
 import 'package:cooker/pages/welcome.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cooker/firebase_options.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:cooker/pages/profilePage.dart';
+import 'package:cooker/pages/searchPage.dart';
+import 'package:firebase_vertexai/firebase_vertexai.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,6 +34,8 @@ class MyApp extends StatelessWidget {
         ScreenPage.id: (context) => const ScreenPage(),
         RootDirPage.id: (context) => const RootDirPage(),
         ProfilePage.id: (context) => const ProfilePage(),
+        SearchPage.id: (context) => const SearchPage(),
+        SearchResults.id: (context) => const SearchResults(),
       },
     );
   }

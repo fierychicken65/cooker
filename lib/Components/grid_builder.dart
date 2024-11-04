@@ -112,6 +112,7 @@ class _GridviewState extends State<Gridview> {
                         print(deleteList);
                       } else {
                         setState(() {
+                          initialLoad = false;
                           currentPath = '$currentPath${folder.name}/';
                           widget.onPathChanged(currentPath);
                         });

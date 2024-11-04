@@ -43,7 +43,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           borderRadius: BorderRadius.circular(
                               60), // Set the desired border radius here
                           child: Image.network(
-                            image!,
+                            image,
                             height: 100,
                             width: 100,
                             fit: BoxFit.cover,
