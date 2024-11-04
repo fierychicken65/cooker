@@ -100,7 +100,6 @@ class _WelcomePageState extends State<WelcomePage> {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('Exception: $e')),
                         );
-                        print(e);
                       }
                     },
                     height: 50,
