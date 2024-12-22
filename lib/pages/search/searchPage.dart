@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:animated_hint_textfield/animated_hint_textfield.dart';
-import 'package:cooker/pages/searchResults.dart';
 import 'package:firebase_vertexai/firebase_vertexai.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});

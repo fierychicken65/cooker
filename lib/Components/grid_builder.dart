@@ -1,3 +1,4 @@
+import 'package:cooker/pages/file_summary.dart';
 import 'package:cooker/pages/root_dir_page.dart';
 import 'package:flutter/material.dart';
 import 'package:cooker/network/firebase_login.dart';
@@ -145,15 +146,16 @@ class _GridviewState extends State<Gridview> {
                             splashColor: Colors.blueGrey,
                             color: bgFolderColor(file.fullPath),
                             onPressed: () {
-                              print(currentPath);
                               String filepath = file.fullPath;
                               if (!appBarNotify.value) {
                                 setState(() {
                                   _updateDeleteList(filepath);
                                 });
-                                print(deleteList);
+                                return;
+
                               }
-                              print(file.name.split('.').last);
+                              Navigator.pushNamed(context, FileSummary.id, arguments: {'path':file.fullPath});
+                              print(file.fullPath);
                             },
                             onLongPress: () {
                               String filepath = file.fullPath;
