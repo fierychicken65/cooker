@@ -13,7 +13,7 @@ ValueNotifier<bool> appBarNotify = ValueNotifier<bool>(true);
 List<String> deleteList = [];
 ValueNotifier<int> deleteCountNotifier = ValueNotifier<int>(0);
 ValueNotifier<double> uploadProgress = ValueNotifier<double>(0.0);
-List<String> pathList = ['home',];
+List<String> pathList = ['Home',];
 
 
 class RootDirPage extends StatefulWidget {
@@ -30,6 +30,7 @@ class _RootDirPageState extends State<RootDirPage> {
   @override
   void initState() {
     super.initState();
+    pathList = ['Home'];
     final User? user = auth.currentUser;
     uid = user!.uid;
     uploadProgress.value = 1;
@@ -358,7 +359,7 @@ class _RootDirPageState extends State<RootDirPage> {
                 padding: EdgeInsets.symmetric(vertical: 15,horizontal:10 ),
                 child: Container(
                   width: 10000,
-                  height: 50,
+                  height: 20,
                   child: ListView(
                     scrollDirection: Axis.horizontal,
                     children: [BreadCrumb.builder(
@@ -368,7 +369,7 @@ class _RootDirPageState extends State<RootDirPage> {
                         return BreadCrumbItem(
                           content: Text(
                             item,
-                            style: TextStyle(color: Colors.white),
+                            style: TextStyle(color: Colors.white,fontSize: 14),
                           ),
                         );
                       },
