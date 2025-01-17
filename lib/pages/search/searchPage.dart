@@ -34,12 +34,13 @@ class _SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
-      body: Flexible(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SingleChildScrollView(
+            child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 50),
               child: AnimatedTextField(
                 controller: _searchBarController,
@@ -69,48 +70,48 @@ class _SearchPageState extends State<SearchPage> {
                 ),
               ),
             ),
-            Center(
-              child: MaterialButton(
-                onPressed: () async {
-                  setState(() {
-                    circularLoading = true;
-                  });
-                  prompt = _searchBarController.text;
-                  print(prompt);
-                  final query = [
-                    Content.text(prompt +
-                        " in this format name: \n  description: \n only these 2 features should be mentioned in 50 words max")
-                  ];
-                  final resp = await model.generateContent(query);
-                  setState(() {
-                    response = resp.text!;
-                    circularLoading = false;
-                  });
-                  print(response);
-                  _searchBarController.clear();
-                },
-                color: Colors.red,
-                child: Icon(
-                  Icons.search,
-                ),
+          ),
+          Center(
+            child: MaterialButton(
+              onPressed: () async {
+                setState(() {
+                  circularLoading = true;
+                });
+                prompt = _searchBarController.text;
+                print(prompt);
+                final query = [
+                  Content.text(prompt +
+                      " in this format name: \n  description: \n only these 2 features should be mentioned")
+                ];
+                final resp = await model.generateContent(query);
+                setState(() {
+                  response = resp.text!;
+                  circularLoading = false;
+                });
+                print(response);
+                _searchBarController.clear();
+              },
+              color: Colors.red,
+              child: Icon(
+                Icons.search,
               ),
             ),
-            circularLoading
-                ? CircularProgressIndicator()
-                : Padding(
-                    padding: const EdgeInsets.all(30.0),
-                    child: Container(
-                      height: 500,
-                      child: SingleChildScrollView(
-                        child: Text(
-                          '$response',
-                          style: TextStyle(color: Colors.black),
-                        ),
+          ),
+          circularLoading
+              ? CircularProgressIndicator()
+              : Padding(
+                  padding: const EdgeInsets.all(30.0),
+                  child: Container(
+                    height: 500,
+                    child: SingleChildScrollView(
+                      child: Text(
+                        '$response',
+                        style: TextStyle(color: Colors.black),
                       ),
                     ),
                   ),
-          ],
-        ),
+                ),
+        ],
       ),
     );
   }
