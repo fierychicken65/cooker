@@ -1,17 +1,20 @@
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:cooker/Components/grid_builder.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cooker/network/firebase_login.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'dart:io';
-import 'dart:typed_data';
+import 'package:flutter_breadcrumb/flutter_breadcrumb.dart';
 
 int _selectedIndex = 0;
 ValueNotifier<bool> appBarNotify = ValueNotifier<bool>(true);
 List<String> deleteList = [];
 ValueNotifier<int> deleteCountNotifier = ValueNotifier<int>(0);
 ValueNotifier<double> uploadProgress = ValueNotifier<double>(0.0);
+List<String> pathList = ['home',];
+
 
 class RootDirPage extends StatefulWidget {
   const RootDirPage({super.key});
@@ -57,24 +60,23 @@ class _RootDirPageState extends State<RootDirPage> {
       try {
         var uploadTask = storageRef.putFile(file);
         uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
-          uploadProgress.value =
-              snapshot.bytesTransferred / snapshot.totalBytes;
+          uploadProgress.value = snapshot.bytesTransferred / snapshot.totalBytes;
         });
         print(uploadProgress.value);
 
         await uploadTask;
 
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Center(child: Text('File uploaded successfully'))));
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Center(child: Text('File uploaded successfully'))));
         setState(() {});
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Center(child: Text('Failed to upload file: $e'))));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Center(child: Text('Failed to upload file: $e'))));
       }
     } else {
       // User canceled the picker
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Center(child: Text('No file selected'))));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Center(child: Text('No file selected'))));
     }
   }
 
@@ -90,6 +92,8 @@ class _RootDirPageState extends State<RootDirPage> {
 
       if (_selectedIndex == 1) {
         currentPath = '';
+        pathList= ['home'];
+        print(pathList);
       } else if (_selectedIndex == 0) {
         if (currentPath.isNotEmpty) {
           List<String> pathSegments = currentPath.split('/');
@@ -98,9 +102,12 @@ class _RootDirPageState extends State<RootDirPage> {
             if (pathSegments.last.isEmpty) {
               pathSegments.removeLast();
             }
+            if(pathList.isNotEmpty){
+              pathList.removeLast();
+            }
+            print(pathList);
             pathSegments.removeLast();
             currentPath = pathSegments.join('/');
-            currentPath += '/';
             _onPathChanged(currentPath);
           }
         }
@@ -131,22 +138,17 @@ class _RootDirPageState extends State<RootDirPage> {
                       if (folderName.isNotEmpty) {
                         try {
                           // Create a reference to the new folder in Firebase Storage
-                          final folderRef = storage
-                              .ref()
-                              .child('$uid/$currentPath/$folderName/');
+                          final folderRef = storage.ref().child('$uid/$currentPath/$folderName/');
 
                           // Create the folder by uploading an empty file
-                          await folderRef
-                              .child('delete this')
-                              .putData(Uint8List(0));
+                          await folderRef.child('delete this').putData(Uint8List(0));
                           setState(() {
                             currentPath = currentPath;
                           });
                           // Notify the user about the successful folder creation
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Center(
-                                  child: Text('Folder created successfully')),
+                              content: Center(child: Text('Folder created successfully')),
                             ),
                           );
 
@@ -155,15 +157,13 @@ class _RootDirPageState extends State<RootDirPage> {
                         } catch (e) {
                           // Notify the user about the failure
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                                content: Text('Failed to create folder: $e')),
+                            SnackBar(content: Text('Failed to create folder: $e')),
                           );
                         }
                       } else {
                         // Notify the user to enter a folder name
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text('Please enter a folder name')),
+                          const SnackBar(content: Text('Please enter a folder name')),
                         );
                       }
                       Navigator.pop(context, 'OK');
@@ -229,8 +229,7 @@ class _RootDirPageState extends State<RootDirPage> {
             position: PopupMenuPosition.under,
             enableFeedback: true,
             color: Colors.blueGrey,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             onSelected: (int result) {
               if (result == 0) {
                 Navigator.pushNamed(context, 'profile_page');
@@ -270,10 +269,8 @@ class _RootDirPageState extends State<RootDirPage> {
             padding: EdgeInsets.all(10),
             child: Text(
               '$username',
-              style: const TextStyle(
-                  fontSize: 20,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w800),
+              style:
+                  const TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.w800),
             ),
           ),
         ],
@@ -347,13 +344,36 @@ class _RootDirPageState extends State<RootDirPage> {
           Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              // Padding(
+              //   padding: EdgeInsets.symmetric(vertical: 13, horizontal: 10),
+              //   child: Align(
+              //     alignment: Alignment.centerLeft,
+              //     child: Text(
+              //       'home/$currentPath',
+              //       style: TextStyle(color: Colors.white, fontSize: 18),
+              //     ),
+              //   ),
+              // ),
               Padding(
-                padding: EdgeInsets.symmetric(vertical: 13, horizontal: 10),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Storage\n$username/$currentPath',
-                    style: TextStyle(color: Colors.white, fontSize: 18),
+                padding: EdgeInsets.symmetric(vertical: 15,horizontal:10 ),
+                child: Container(
+                  width: 10000,
+                  height: 50,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: [BreadCrumb.builder(
+                      itemCount: pathList.length,
+                      builder: (index) {
+                        String item = pathList[index];
+                        return BreadCrumbItem(
+                          content: Text(
+                            item,
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        );
+                      },
+                      divider: Icon(Icons.chevron_right,color: Colors.white,),
+                    ),]
                   ),
                 ),
               ),
@@ -397,11 +417,9 @@ class _RootDirPageState extends State<RootDirPage> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const [
-          BottomNavigationBarItem(
-              icon: Icon(Icons.arrow_back_sharp), label: 'back'),
+          BottomNavigationBarItem(icon: Icon(Icons.arrow_back_sharp), label: 'back'),
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'home'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.create_new_folder), label: 'create folder'),
+          BottomNavigationBarItem(icon: Icon(Icons.create_new_folder), label: 'create folder'),
         ],
         currentIndex: _selectedIndex,
         backgroundColor: Colors.black,

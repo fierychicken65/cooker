@@ -114,7 +114,9 @@ class _GridviewState extends State<Gridview> {
                       } else {
                         setState(() {
                           initialLoad = false;
-                          currentPath = '$currentPath${folder.name}/';
+                          currentPath = '$currentPath/${folder.name}/';
+                          pathList.add(folder.name);
+                          print(pathList);
                           widget.onPathChanged(currentPath);
                         });
                       }
