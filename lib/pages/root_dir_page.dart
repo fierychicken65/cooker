@@ -333,7 +333,7 @@ class _RootDirPageState extends State<RootDirPage> {
     return PopScope(
       canPop: false,
       onPopInvoked: (index)=>{
-        _onItemTapped(1),
+        _onItemTapped(0),
       },
       child: Scaffold(
         appBar: PreferredSize(
