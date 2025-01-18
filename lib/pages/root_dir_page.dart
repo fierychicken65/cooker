@@ -93,7 +93,7 @@ class _RootDirPageState extends State<RootDirPage> {
 
       if (_selectedIndex == 1) {
         currentPath = '';
-        pathList= ['home'];
+        pathList= ['Home'];
         print(pathList);
       } else if (_selectedIndex == 0) {
         if (currentPath.isNotEmpty) {
@@ -329,104 +329,110 @@ class _RootDirPageState extends State<RootDirPage> {
     final User? user = auth.currentUser;
     final String? username = user!.displayName;
 
-    return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(70.0), // Set the height of the AppBar
-        child: ValueListenableBuilder<bool>(
-          valueListenable: appBarNotify,
-          builder: (context, appBar, child) {
-            return appBar ? buildAppBar() : delAppBar();
-          },
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (index)=>{
+        _onItemTapped(1),
+      },
+      child: Scaffold(
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(70.0), // Set the height of the AppBar
+          child: ValueListenableBuilder<bool>(
+            valueListenable: appBarNotify,
+            builder: (context, appBar, child) {
+              return appBar ? buildAppBar() : delAppBar();
+            },
+          ),
         ),
-      ),
-      backgroundColor: Colors.black,
-      body: Stack(
-        children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // Padding(
-              //   padding: EdgeInsets.symmetric(vertical: 13, horizontal: 10),
-              //   child: Align(
-              //     alignment: Alignment.centerLeft,
-              //     child: Text(
-              //       'home/$currentPath',
-              //       style: TextStyle(color: Colors.white, fontSize: 18),
-              //     ),
-              //   ),
-              // ),
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 15,horizontal:10 ),
-                child: Container(
-                  width: 10000,
-                  height: 20,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    children: [BreadCrumb.builder(
-                      itemCount: pathList.length,
-                      builder: (index) {
-                        String item = pathList[index];
-                        return BreadCrumbItem(
-                          content: Text(
-                            item,
-                            style: TextStyle(color: Colors.white,fontSize: 14),
-                          ),
-                        );
-                      },
-                      divider: Icon(Icons.chevron_right,color: Colors.white,),
-                    ),]
+        backgroundColor: Colors.black,
+        body: Stack(
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // Padding(
+                //   padding: EdgeInsets.symmetric(vertical: 13, horizontal: 10),
+                //   child: Align(
+                //     alignment: Alignment.centerLeft,
+                //     child: Text(
+                //       'home/$currentPath',
+                //       style: TextStyle(color: Colors.white, fontSize: 18),
+                //     ),
+                //   ),
+                // ),
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 15,horizontal:10 ),
+                  child: Container(
+                    width: 10000,
+                    height: 20,
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      children: [BreadCrumb.builder(
+                        itemCount: pathList.length,
+                        builder: (index) {
+                          String item = pathList[index];
+                          return BreadCrumbItem(
+                            content: Text(
+                              item,
+                              style: TextStyle(color: Colors.white,fontSize: 14),
+                            ),
+                          );
+                        },
+                        divider: Icon(Icons.chevron_right,color: Colors.white,),
+                      ),]
+                    ),
                   ),
                 ),
-              ),
-              Gridview(
-                path: currentPath,
-                onPathChanged: _onPathChanged,
-              ),
-              ValueListenableBuilder<double>(
-                valueListenable: uploadProgress,
-                builder: (context, progress, child) {
-                  return LinearProgressIndicator(
-                    value: progress,
-                    backgroundColor: Colors.grey,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.redAccent),
-                  );
-                },
-              ),
-            ],
-          ),
-          Positioned(
-            bottom: 40,
-            right: 30,
-            child: MaterialButton(
-              onPressed: _pickAndUploadFile,
-              onLongPress: () {},
-              color: Colors.redAccent,
-              elevation: 20,
-              splashColor: Colors.red,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(70),
-              ),
-              height: 50,
-              minWidth: 50,
-              child: Image.asset(
-                'images/upload.png',
-                height: 40,
+                Gridview(
+                  path: currentPath,
+                  onPathChanged: _onPathChanged,
+                ),
+                ValueListenableBuilder<double>(
+                  valueListenable: uploadProgress,
+                  builder: (context, progress, child) {
+                    return LinearProgressIndicator(
+                      value: progress,
+                      backgroundColor: Colors.grey,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.redAccent),
+                    );
+                  },
+                ),
+              ],
+            ),
+            Positioned(
+              bottom: 40,
+              right: 30,
+              child: MaterialButton(
+                onPressed: _pickAndUploadFile,
+                onLongPress: () {},
+                color: Colors.redAccent,
+                elevation: 20,
+                splashColor: Colors.red,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(70),
+                ),
+                height: 50,
+                minWidth: 50,
+                child: Image.asset(
+                  'images/upload.png',
+                  height: 40,
+                ),
               ),
             ),
-          ),
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.arrow_back_sharp), label: 'back'),
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'home'),
-          BottomNavigationBarItem(icon: Icon(Icons.create_new_folder), label: 'create folder'),
-        ],
-        currentIndex: _selectedIndex,
-        backgroundColor: Colors.black,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.white,
-        onTap: _onItemTapped,
+          ],
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          items: const [
+            BottomNavigationBarItem(icon: Icon(Icons.arrow_back_sharp), label: 'back'),
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'home'),
+            BottomNavigationBarItem(icon: Icon(Icons.create_new_folder), label: 'create folder'),
+          ],
+          currentIndex: _selectedIndex,
+          backgroundColor: Colors.black,
+          selectedItemColor: Colors.white,
+          unselectedItemColor: Colors.white,
+          onTap: _onItemTapped,
+        ),
       ),
     );
   }
