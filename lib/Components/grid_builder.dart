@@ -7,6 +7,8 @@ import 'package:cooker/Components/folderItem.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:file_icon/file_icon.dart';
 
+
+late bool initialLoad;
 Stream<ListResult> listFilesStream(String path) async* {
   final storageRef = storage.ref().child(path);
   while (true) {
@@ -28,7 +30,7 @@ class Gridview extends StatefulWidget {
 class _GridviewState extends State<Gridview> {
   late String currentPath;
   late String uid;
-  late bool initialLoad;
+
 
   @override
   void initState() {
@@ -92,7 +94,7 @@ class _GridviewState extends State<Gridview> {
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 3, // Number of columns
                 crossAxisSpacing: 5.0,
-                mainAxisSpacing: 10.0,
+                mainAxisSpacing: 5.0,
               ),
               itemCount:
                   snapshot.data!.items.length + snapshot.data!.prefixes.length,

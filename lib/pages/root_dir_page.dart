@@ -93,10 +93,14 @@ class _RootDirPageState extends State<RootDirPage> {
 
       if (_selectedIndex == 1) {
         currentPath = '';
+        setState(() {
+          initialLoad = false;
+        });
         pathList= ['Home'];
         print(pathList);
       } else if (_selectedIndex == 0) {
         if (currentPath.isNotEmpty) {
+          initialLoad = false;
           List<String> pathSegments = currentPath.split('/');
           print(pathSegments);
           if (pathSegments.isNotEmpty) {
