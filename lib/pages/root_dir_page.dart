@@ -235,6 +235,7 @@ class _RootDirPageState extends State<RootDirPage> {
               if (result == 0) {
                 Navigator.pushNamed(context, 'profile_page');
               } else if (result == 1) {
+                Navigator.pop(context);
               } else if (result == 2) {
                 Navigator.pushNamed(context, 'search_page');
               }
