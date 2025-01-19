@@ -32,14 +32,6 @@ class _WelcomePageState extends State<WelcomePage> {
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(30),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.1),
-                          spreadRadius: 5,
-                          blurRadius: 7,
-                          offset: Offset(0, 1), // changes position of shadow
-                        ),
-                      ],
                     ),
                     child: Image.asset(
                       'images/cook1.png',
@@ -49,7 +41,7 @@ class _WelcomePageState extends State<WelcomePage> {
                     ),
                   ),
                 ),
-                Text(
+                const Text(
                   'COOKER',
                   style: TextStyle(
                     fontSize: 40,
@@ -61,7 +53,7 @@ class _WelcomePageState extends State<WelcomePage> {
                     .fadeIn(duration: 600.ms)
                     .then(delay: 200.ms), // baseline=800ms.slide(),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 30),
+                  padding:const EdgeInsets.symmetric(horizontal: 40, vertical: 30),
                   child: MaterialButton(
                     onPressed: () async {
                       try {
@@ -90,8 +82,8 @@ class _WelcomePageState extends State<WelcomePage> {
                             content: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Container(
-                                child: Text('Login Succesful'),
-                                margin: EdgeInsets.all(10),
+                                margin: const EdgeInsets.all(10),
+                                child:const Text('Login Succesful'),
                               ),
                             ),
                           ),

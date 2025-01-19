@@ -6,6 +6,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cooker/network/firebase_login.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_breadcrumb/flutter_breadcrumb.dart';
 
 int _selectedIndex = 0;
@@ -13,8 +14,9 @@ ValueNotifier<bool> appBarNotify = ValueNotifier<bool>(true);
 List<String> deleteList = [];
 ValueNotifier<int> deleteCountNotifier = ValueNotifier<int>(0);
 ValueNotifier<double> uploadProgress = ValueNotifier<double>(0.0);
-List<String> pathList = ['Home',];
-
+List<String> pathList = [
+  '🏠',
+];
 
 class RootDirPage extends StatefulWidget {
   const RootDirPage({super.key});
@@ -30,7 +32,7 @@ class _RootDirPageState extends State<RootDirPage> {
   @override
   void initState() {
     super.initState();
-    pathList = ['Home'];
+    pathList = ['🏠'];
     final User? user = auth.currentUser;
     uid = user!.uid;
     uploadProgress.value = 1;
@@ -96,7 +98,7 @@ class _RootDirPageState extends State<RootDirPage> {
         setState(() {
           initialLoad = false;
         });
-        pathList= ['Home'];
+        pathList = ['🏠'];
         print(pathList);
       } else if (_selectedIndex == 0) {
         if (currentPath.isNotEmpty) {
@@ -107,7 +109,7 @@ class _RootDirPageState extends State<RootDirPage> {
             if (pathSegments.last.isEmpty) {
               pathSegments.removeLast();
             }
-            if(pathList.isNotEmpty){
+            if (pathList.isNotEmpty) {
               pathList.removeLast();
             }
             print(pathList);
@@ -224,107 +226,197 @@ class _RootDirPageState extends State<RootDirPage> {
 
     return AppBar(
       automaticallyImplyLeading: false,
-      elevation: 10,
-      toolbarHeight: 70,
-      backgroundColor: Colors.black54,
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          PopupMenuButton(
-            position: PopupMenuPosition.under,
-            enableFeedback: true,
-            color: Colors.blueGrey,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            onSelected: (int result) {
-              if (result == 0) {
-                Navigator.pushNamed(context, 'profile_page');
-              } else if (result == 1) {
-                Navigator.pop(context);
-              } else if (result == 2) {
-                Navigator.pushNamed(context, 'search_page');
-              }
-            },
-            itemBuilder: (BuildContext context) => <PopupMenuEntry<int>>[
-              const PopupMenuItem<int>(
-                value: 0,
-                child: Text('Profile'),
-              ),
-              const PopupMenuItem<int>(
-                value: 2,
-                child: Text('Search'),
-              ),
-              const PopupMenuItem<int>(
-                value: 1,
-                child: Text('Sign Out'),
-              ),
-            ],
-            child: Hero(
-              tag: 'profile',
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(60),
-                child: Image.network(
-                  image!,
-                  height: 50,
-                  width: 50,
-                  fit: BoxFit.cover,
+      elevation: 400,
+      backgroundColor: Colors.deepPurple,
+      scrolledUnderElevation: 10,
+      toolbarHeight: 100,
+      shadowColor: Colors.deepPurpleAccent,
+      shape: const RoundedRectangleBorder(
+        borderRadius:
+            BorderRadius.only(bottomRight: Radius.circular(30), bottomLeft: Radius.circular(30)),
+      ),
+      flexibleSpace: Container(
+        decoration:const BoxDecoration(
+          boxShadow: [BoxShadow(color: Colors.deepPurple,spreadRadius: 1,blurRadius: 10,blurStyle: BlurStyle.outer)],
+          borderRadius:
+              BorderRadius.only(bottomRight: Radius.circular(25), bottomLeft: Radius.circular(25)),
+          gradient: LinearGradient(
+              begin: Alignment.topRight,
+              end: Alignment.bottomLeft,
+              tileMode: TileMode.clamp,
+              colors: <Color>[Color.fromRGBO(33, 5, 36, 1), Colors.black, Colors.black87,Color.fromRGBO(33, 5, 36, 1)]),
+        ),
+      ),
+      title: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            PopupMenuButton(
+              splashRadius: 7,
+              position: PopupMenuPosition.under,
+              enableFeedback: true,
+              color: Colors.blueGrey,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              onSelected: (int result) {
+                if (result == 0) {
+                  Navigator.pushNamed(context, 'profile_page');
+                } else if (result == 1) {
+                  Navigator.pop(context);
+                } else if (result == 2) {
+                  Navigator.pushNamed(context, 'search_page');
+                }
+              },
+              itemBuilder: (BuildContext context) => <PopupMenuEntry<int>>[
+                const PopupMenuItem<int>(
+                  value: 0,
+                  child: Text('Profile'),
+                ),
+                const PopupMenuItem<int>(
+                  value: 2,
+                  child: Text('Search'),
+                ),
+                const PopupMenuItem<int>(
+                  value: 1,
+                  child: Text('Sign Out'),
+                ),
+              ],
+              child: Hero(
+                tag: 'profile',
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(60),
+                  child: Image.network(
+                    image!,
+                    height: 40,
+                    width: 40,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
             ),
-          ),
-          Padding(
-            padding: EdgeInsets.all(10),
-            child: Text(
-              '$username',
-              style:
-                  const TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.w800),
+            Padding(
+              padding: EdgeInsets.all(10),
+              child: Text(
+                '$username',
+                style:
+                    const TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.w800),
+              ),
             ),
+          ],
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+          child: Container(
+            width: 10000,
+            height: 20,
+            child: ListView(scrollDirection: Axis.horizontal, children: [
+              BreadCrumb.builder(
+                itemCount: pathList.length,
+                builder: (index) {
+                  String item = pathList[index];
+                  return BreadCrumbItem(
+                    content: Text(
+                      item,
+                      style: TextStyle(color: Colors.white, fontSize: 14),
+                    ),
+                  );
+                },
+                divider: Icon(
+                  Icons.chevron_right,
+                  color: Colors.white,
+                ),
+              ),
+            ]),
           ),
-        ],
-      ),
+        ),
+      ],),
     );
   }
 
   AppBar delAppBar() {
-    late String? image = auth.currentUser?.photoURL;
-    final User? user = auth.currentUser;
-    final String? username = user!.displayName;
-
     return AppBar(
       automaticallyImplyLeading: false,
-      elevation: 10,
-      toolbarHeight: 70,
+      elevation: 400,
+      scrolledUnderElevation: 10,
+      toolbarHeight: 100,
+      shadowColor: Colors.deepOrange,
       backgroundColor: Colors.red,
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          MaterialButton(
-            onPressed: () {
-              setState(() {
+      shape: const RoundedRectangleBorder(
+        borderRadius:
+        BorderRadius.only(bottomRight: Radius.circular(25), bottomLeft: Radius.circular(25)),
+      ),
+      flexibleSpace: Container(
+        decoration:const BoxDecoration(
+          boxShadow: [BoxShadow(color: Colors.redAccent,spreadRadius: 1,blurRadius: 10,blurStyle: BlurStyle.outer)],
+          borderRadius:
+          BorderRadius.only(bottomRight: Radius.circular(25), bottomLeft: Radius.circular(25)),
+          gradient: LinearGradient(
+              begin: Alignment.topRight,
+              end: Alignment.bottomLeft,
+              tileMode: TileMode.clamp,
+              colors: <Color>[Colors.deepOrange, Colors.red, Colors.redAccent]),
+        ),
+      ),
+      title: Column(
+        children: [Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            MaterialButton(
+              onPressed: () {
+                setState(() {
+                  appBarNotify.value = !appBarNotify.value;
+                  deleteList = [];
+                  deleteCountNotifier.value = deleteList.length;
+                  print(deleteList);
+                });
+              },
+              child: const Icon(Icons.cancel_rounded),
+            ),
+            ValueListenableBuilder<int>(
+              valueListenable: deleteCountNotifier,
+              builder: (context, count, child) {
+                return Text('$count Selected');
+              },
+            ),
+            MaterialButton(
+              onPressed: () {
+                _deleteItems(deleteList);
                 appBarNotify.value = !appBarNotify.value;
                 deleteList = [];
                 deleteCountNotifier.value = deleteList.length;
                 print(deleteList);
-              });
-            },
-            child: const Icon(Icons.cancel),
+              },
+              child: const Icon(Icons.delete),
+            ),
+          ],
+        ),
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+            child: Container(
+              width: 10000,
+              height: 20,
+              child: ListView(scrollDirection: Axis.horizontal, children: [
+                BreadCrumb.builder(
+                  itemCount: pathList.length,
+                  builder: (index) {
+                    String item = pathList[index];
+                    return BreadCrumbItem(
+                      content: Text(
+                        item,
+                        style: TextStyle(color: Colors.black, fontSize: 14),
+                      ),
+                    );
+                  },
+                  divider: Icon(
+                    Icons.chevron_right,
+                    color: Colors.black,
+                  ),
+                ),
+              ]),
+            ),
           ),
-          ValueListenableBuilder<int>(
-            valueListenable: deleteCountNotifier,
-            builder: (context, count, child) {
-              return Text('$count Selected');
-            },
-          ),
-          MaterialButton(
-            onPressed: () {
-              _deleteItems(deleteList);
-              appBarNotify.value = !appBarNotify.value;
-              deleteList = [];
-              deleteCountNotifier.value = deleteList.length;
-              print(deleteList);
-            },
-            child: const Icon(Icons.delete),
-          ),
-        ],
+        ]
       ),
     );
   }
@@ -336,12 +428,12 @@ class _RootDirPageState extends State<RootDirPage> {
 
     return PopScope(
       canPop: false,
-      onPopInvoked: (index)=>{
+      onPopInvoked: (index) => {
         _onItemTapped(0),
       },
       child: Scaffold(
         appBar: PreferredSize(
-          preferredSize: Size.fromHeight(70.0), // Set the height of the AppBar
+          preferredSize: Size.fromHeight(100.0), // Set the height of the AppBar
           child: ValueListenableBuilder<bool>(
             valueListenable: appBarNotify,
             builder: (context, appBar, child) {
@@ -350,81 +442,61 @@ class _RootDirPageState extends State<RootDirPage> {
           ),
         ),
         backgroundColor: Colors.black,
-        body: Stack(
-          children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Padding(
-                //   padding: EdgeInsets.symmetric(vertical: 13, horizontal: 10),
-                //   child: Align(
-                //     alignment: Alignment.centerLeft,
-                //     child: Text(
-                //       'home/$currentPath',
-                //       style: TextStyle(color: Colors.white, fontSize: 18),
-                //     ),
-                //   ),
-                // ),
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 15,horizontal:10 ),
-                  child: Container(
-                    width: 10000,
-                    height: 20,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: [BreadCrumb.builder(
-                        itemCount: pathList.length,
-                        builder: (index) {
-                          String item = pathList[index];
-                          return BreadCrumbItem(
-                            content: Text(
-                              item,
-                              style: TextStyle(color: Colors.white,fontSize: 14),
-                            ),
-                          );
-                        },
-                        divider: Icon(Icons.chevron_right,color: Colors.white,),
-                      ),]
-                    ),
+        body: Padding(
+          padding: EdgeInsets.only(top: 20,left: 5,right: 5),
+          child: Stack(
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Padding(
+                  //   padding: EdgeInsets.symmetric(vertical: 13, horizontal: 10),
+                  //   child: Align(
+                  //     alignment: Alignment.centerLeft,
+                  //     child: Text(
+                  //       'home/$currentPath',
+                  //       style: TextStyle(color: Colors.white, fontSize: 18),
+                  //     ),
+                  //   ),
+                  // ),
+                  Gridview(
+                    path: currentPath,
+                    onPathChanged: _onPathChanged,
+                  ),
+                  ValueListenableBuilder<double>(
+                    valueListenable: uploadProgress,
+                    builder: (context, progress, child) {
+                      return LinearProgressIndicator(
+                        value: progress,
+                        backgroundColor: Colors.grey,
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.redAccent),
+                      );
+                    },
+                  ),
+                ],
+              ),
+              Positioned(
+                bottom: 40,
+                right: 30,
+                child: MaterialButton(
+                  onPressed: _pickAndUploadFile,
+                  onLongPress: () {},
+                  color: Colors.redAccent,
+                  elevation: 20,
+                  splashColor: Colors.red,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(70),
+                  ),
+                  height: 50,
+                  minWidth: 50,
+                  child: Image.asset(
+                    'images/upload.png',
+                    height: 40,
                   ),
                 ),
-                Gridview(
-                  path: currentPath,
-                  onPathChanged: _onPathChanged,
-                ),
-                ValueListenableBuilder<double>(
-                  valueListenable: uploadProgress,
-                  builder: (context, progress, child) {
-                    return LinearProgressIndicator(
-                      value: progress,
-                      backgroundColor: Colors.grey,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.redAccent),
-                    );
-                  },
-                ),
-              ],
-            ),
-            Positioned(
-              bottom: 40,
-              right: 30,
-              child: MaterialButton(
-                onPressed: _pickAndUploadFile,
-                onLongPress: () {},
-                color: Colors.redAccent,
-                elevation: 20,
-                splashColor: Colors.red,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(70),
-                ),
-                height: 50,
-                minWidth: 50,
-                child: Image.asset(
-                  'images/upload.png',
-                  height: 40,
-                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         bottomNavigationBar: BottomNavigationBar(
           items: const [
@@ -432,6 +504,8 @@ class _RootDirPageState extends State<RootDirPage> {
             BottomNavigationBarItem(icon: Icon(Icons.home), label: 'home'),
             BottomNavigationBarItem(icon: Icon(Icons.create_new_folder), label: 'create folder'),
           ],
+          enableFeedback: true,
+          elevation: 100,
           currentIndex: _selectedIndex,
           backgroundColor: Colors.black,
           selectedItemColor: Colors.white,
