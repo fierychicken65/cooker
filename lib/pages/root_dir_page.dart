@@ -236,101 +236,129 @@ class _RootDirPageState extends State<RootDirPage> {
             BorderRadius.only(bottomRight: Radius.circular(30), bottomLeft: Radius.circular(30)),
       ),
       flexibleSpace: Container(
-        decoration:const BoxDecoration(
-          boxShadow: [BoxShadow(color: Colors.deepPurple,spreadRadius: 1,blurRadius: 10,blurStyle: BlurStyle.outer)],
+        decoration: const BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+                color: Colors.deepPurple,
+                spreadRadius: 1,
+                blurRadius: 10,
+                blurStyle: BlurStyle.outer)
+          ],
           borderRadius:
               BorderRadius.only(bottomRight: Radius.circular(25), bottomLeft: Radius.circular(25)),
           gradient: LinearGradient(
               begin: Alignment.topRight,
               end: Alignment.bottomLeft,
               tileMode: TileMode.clamp,
-              colors: <Color>[Color.fromRGBO(33, 5, 36, 1), Colors.black, Colors.black87,Color.fromRGBO(33, 5, 36, 1)]),
+              colors: <Color>[
+                Color.fromRGBO(33, 5, 36, 1),
+                Colors.black,
+                Colors.black87,
+                Color.fromRGBO(33, 5, 36, 1)
+              ]),
         ),
       ),
       title: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            PopupMenuButton(
-              splashRadius: 7,
-              position: PopupMenuPosition.under,
-              enableFeedback: true,
-              color: Colors.blueGrey,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-              onSelected: (int result) {
-                if (result == 0) {
-                  Navigator.pushNamed(context, 'profile_page');
-                } else if (result == 1) {
-                  Navigator.pop(context);
-                } else if (result == 2) {
-                  Navigator.pushNamed(context, 'search_page');
-                }
-              },
-              itemBuilder: (BuildContext context) => <PopupMenuEntry<int>>[
-                const PopupMenuItem<int>(
-                  value: 0,
-                  child: Text('Profile'),
-                ),
-                const PopupMenuItem<int>(
-                  value: 2,
-                  child: Text('Search'),
-                ),
-                const PopupMenuItem<int>(
-                  value: 1,
-                  child: Text('Sign Out'),
-                ),
-              ],
-              child: Hero(
-                tag: 'profile',
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(60),
-                  child: Image.network(
-                    image!,
-                    height: 40,
-                    width: 40,
-                    fit: BoxFit.cover,
+        mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              PopupMenuButton(
+                splashRadius: 7,
+                position: PopupMenuPosition.under,
+                enableFeedback: true,
+                color: Colors.blueGrey,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                onSelected: (int result) {
+                  if (result == 0) {
+                    Navigator.pushNamed(context, 'profile_page');
+                  } else if (result == 1) {
+                    Navigator.pop(context);
+                  } else if (result == 2) {
+                    Navigator.pushNamed(context, 'search_page');
+                  }
+                },
+                itemBuilder: (BuildContext context) => <PopupMenuEntry<int>>[
+                  const PopupMenuItem<int>(
+                    value: 0,
+                    child: Text('Profile'),
+                  ),
+                  const PopupMenuItem<int>(
+                    value: 2,
+                    child: Text('Search'),
+                  ),
+                  const PopupMenuItem<int>(
+                    value: 1,
+                    child: Text('Sign Out'),
+                  ),
+                ],
+                child: Hero(
+                  tag: 'profile',
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(60),
+                    child: Image.network(
+                      image!,
+                      height: 40,
+                      width: 40,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
               ),
-            ),
-            Padding(
-              padding: EdgeInsets.all(10),
-              child: Text(
-                '$username',
-                style:
-                    const TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.w800),
-              ),
-            ),
-          ],
-        ),
-        Padding(
-          padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-          child: Container(
-            width: 10000,
-            height: 20,
-            child: ListView(scrollDirection: Axis.horizontal, children: [
-              BreadCrumb.builder(
-                itemCount: pathList.length,
-                builder: (index) {
-                  String item = pathList[index];
-                  return BreadCrumbItem(
-                    content: Text(
-                      item,
-                      style: TextStyle(color: Colors.white, fontSize: 14),
-                    ),
-                  );
-                },
-                divider: Icon(
-                  Icons.chevron_right,
-                  color: Colors.white,
+              Padding(
+                padding: EdgeInsets.all(10),
+                child: Text(
+                  '$username',
+                  style: const TextStyle(
+                      fontSize: 20, color: Colors.white, fontWeight: FontWeight.w800),
                 ),
               ),
-            ]),
+              Container(
+                height: 40,
+                width: 60,
+                child: MaterialButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Icon(
+                    Icons.power_settings_new_rounded,
+                    color: Colors.red,
+                  ),
+                  shape: CircleBorder(eccentricity: 0.3),
+                  color: Colors.transparent,
+                ),
+              )
+            ],
           ),
-        ),
-      ],),
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 15, horizontal: 0),
+            child: Container(
+              width: 10000,
+              height: 20,
+              child: ListView(scrollDirection: Axis.horizontal, children: [
+                BreadCrumb.builder(
+                  itemCount: pathList.length,
+                  builder: (index) {
+                    String item = pathList[index];
+                    return BreadCrumbItem(
+                      content: Text(
+                        item,
+                        style: TextStyle(color: Colors.white, fontSize: 14),
+                      ),
+                    );
+                  },
+                  divider: Icon(
+                    Icons.chevron_right,
+                    color: Colors.white,
+                  ),
+                ),
+              ]),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -344,13 +372,19 @@ class _RootDirPageState extends State<RootDirPage> {
       backgroundColor: Colors.red,
       shape: const RoundedRectangleBorder(
         borderRadius:
-        BorderRadius.only(bottomRight: Radius.circular(25), bottomLeft: Radius.circular(25)),
+            BorderRadius.only(bottomRight: Radius.circular(25), bottomLeft: Radius.circular(25)),
       ),
       flexibleSpace: Container(
-        decoration:const BoxDecoration(
-          boxShadow: [BoxShadow(color: Colors.redAccent,spreadRadius: 1,blurRadius: 10,blurStyle: BlurStyle.outer)],
+        decoration: const BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+                color: Colors.redAccent,
+                spreadRadius: 1,
+                blurRadius: 10,
+                blurStyle: BlurStyle.outer)
+          ],
           borderRadius:
-          BorderRadius.only(bottomRight: Radius.circular(25), bottomLeft: Radius.circular(25)),
+              BorderRadius.only(bottomRight: Radius.circular(25), bottomLeft: Radius.circular(25)),
           gradient: LinearGradient(
               begin: Alignment.topRight,
               end: Alignment.bottomLeft,
@@ -358,8 +392,8 @@ class _RootDirPageState extends State<RootDirPage> {
               colors: <Color>[Colors.deepOrange, Colors.red, Colors.redAccent]),
         ),
       ),
-      title: Column(
-        children: [Row(
+      title: Column(children: [
+        Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             MaterialButton(
@@ -391,33 +425,32 @@ class _RootDirPageState extends State<RootDirPage> {
             ),
           ],
         ),
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-            child: Container(
-              width: 10000,
-              height: 20,
-              child: ListView(scrollDirection: Axis.horizontal, children: [
-                BreadCrumb.builder(
-                  itemCount: pathList.length,
-                  builder: (index) {
-                    String item = pathList[index];
-                    return BreadCrumbItem(
-                      content: Text(
-                        item,
-                        style: TextStyle(color: Colors.black, fontSize: 14),
-                      ),
-                    );
-                  },
-                  divider: Icon(
-                    Icons.chevron_right,
-                    color: Colors.black,
-                  ),
+        Padding(
+          padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+          child: Container(
+            width: 10000,
+            height: 20,
+            child: ListView(scrollDirection: Axis.horizontal, children: [
+              BreadCrumb.builder(
+                itemCount: pathList.length,
+                builder: (index) {
+                  String item = pathList[index];
+                  return BreadCrumbItem(
+                    content: Text(
+                      item,
+                      style: TextStyle(color: Colors.black, fontSize: 14),
+                    ),
+                  );
+                },
+                divider: Icon(
+                  Icons.chevron_right,
+                  color: Colors.black,
                 ),
-              ]),
-            ),
+              ),
+            ]),
           ),
-        ]
-      ),
+        ),
+      ]),
     );
   }
 
@@ -443,7 +476,7 @@ class _RootDirPageState extends State<RootDirPage> {
         ),
         backgroundColor: Colors.black,
         body: Padding(
-          padding: EdgeInsets.only(top: 20,left: 5,right: 5),
+          padding: EdgeInsets.only(top: 20, left: 5, right: 5),
           child: Stack(
             children: [
               Column(
