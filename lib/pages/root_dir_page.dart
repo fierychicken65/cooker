@@ -7,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cooker/network/firebase_login.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_breadcrumb/flutter_breadcrumb.dart';
 
 int _selectedIndex = 0;
@@ -512,21 +513,26 @@ class _RootDirPageState extends State<RootDirPage> {
                 bottom: 40,
                 right: 30,
                 child: MaterialButton(
-                  onPressed: _pickAndUploadFile,
+                  onPressed: () {
+                    _pickAndUploadFile();
+                    setState(() {});
+                  },
                   onLongPress: () {},
-                  color: Colors.redAccent,
+                  color: Colors.deepPurple,
+                  highlightElevation: 40,
+                  enableFeedback: true,
                   elevation: 20,
                   splashColor: Colors.red,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(70),
+                    borderRadius: BorderRadius.circular(20),
                   ),
                   height: 50,
-                  minWidth: 50,
+                  minWidth: 20,
                   child: Image.asset(
                     'images/upload.png',
                     height: 40,
                   ),
-                ),
+                ).animate().shake(),
               ),
             ],
           ),

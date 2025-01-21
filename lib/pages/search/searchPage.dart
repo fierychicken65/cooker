@@ -81,7 +81,7 @@ class _SearchPageState extends State<SearchPage> {
                 print(prompt);
                 final query = [
                   Content.text(prompt +
-                      " in this format name: \n  description: \n only these 2 features should be mentioned")
+                      " give description")
                 ];
                 final resp = await model.generateContent(query);
                 setState(() {

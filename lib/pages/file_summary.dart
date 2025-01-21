@@ -13,23 +13,6 @@ class FileSummary extends StatefulWidget {
 }
 
 class _FileSummaryState extends State<FileSummary> {
-  Future<String> generatedText(Map arguments) async {
-    final prompt = TextPart("Explain this file in 500 words? Do not skip any detail and explain such that you cover every concept in this file");
-    final response = await http.get(Uri.parse(arguments['url']));
-    if (response.statusCode == 200) {
-      final fileBytes = response.bodyBytes;
-      final mimeType = lookupMimeType(arguments['url']) ?? 'application/octet-stream';
-      final filePart = DataPart(mimeType, fileBytes);
-
-      final generatedResponse = await model.generateContent([
-        Content.multi([prompt, filePart])
-      ]);
-      return generatedResponse.text!;
-    } else {
-      throw Exception('Failed to load file');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final arguments = (ModalRoute.of(context)?.settings.arguments ?? <String, dynamic>{}) as Map;
@@ -44,27 +27,11 @@ class _FileSummaryState extends State<FileSummary> {
         ),
       ),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-          child: FutureBuilder<String>(
-            future: generatedText(arguments),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}', style: TextStyle(color: Colors.white)));
-              } else {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(arguments['path'], style: TextStyle(color: Colors.white)),
-                    SizedBox(height: 20),
-                    Text(snapshot.data ?? 'No content generated', style: TextStyle(fontSize: 15, color: Colors.white)),
-                  ],
-                );
-              }
-            },
-          ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+
+          ],
         ),
       ),
     );
