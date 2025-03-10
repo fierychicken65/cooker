@@ -16,6 +16,7 @@ class FolderItem extends StatefulWidget {
     required this.onLongPress,
   }) : super(key: key);
 
+
   @override
   _FolderItemState createState() => _FolderItemState();
 }
