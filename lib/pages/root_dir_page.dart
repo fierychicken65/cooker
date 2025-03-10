@@ -227,7 +227,7 @@ class _RootDirPageState extends State<RootDirPage> {
 
     return AppBar(
       automaticallyImplyLeading: false,
-      elevation: 400,
+      elevation: 100,
       backgroundColor: Colors.deepPurple,
       scrolledUnderElevation: 10,
       toolbarHeight: 100,

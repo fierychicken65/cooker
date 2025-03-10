@@ -55,6 +55,7 @@ dependencies:
   mime_type: ^1.0.1
   mime: ^2.0.0
   flutter_breadcrumb: ^1.0.1
+  url_launcher: ^6.3.1
 
 
 dev_dependencies:

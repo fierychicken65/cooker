@@ -159,8 +159,9 @@ class _GridviewState extends State<Gridview> {
 
                               }
                               String link = await file.getDownloadURL();
-                              print(link);
-                              Navigator.pushNamed(context, FileSummary.id, arguments: {'path':file.fullPath,'url': link});
+                              var val = file.getMetadata();
+                              print(val);
+                              Navigator.pushNamed(context, 'fsummary',arguments: {'path':filepath,'url':link});
                             },
                             onLongPress: () {
                               String filepath = file.fullPath;
