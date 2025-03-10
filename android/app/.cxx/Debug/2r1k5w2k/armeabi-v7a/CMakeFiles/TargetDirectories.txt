@@ -1,0 +1,2 @@
+C:/Users/fadil/StudioProjects/cooker/android/app/.cxx/Debug/2r1k5w2k/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/fadil/StudioProjects/cooker/android/app/.cxx/Debug/2r1k5w2k/armeabi-v7a/CMakeFiles/rebuild_cache.dir
